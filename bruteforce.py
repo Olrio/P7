@@ -56,16 +56,16 @@ def wallet(actions, income, invest):
             # two possibilities
             # case 1 : the best wallet excluding current action
             # case 2 : the best wallet including current action
-            result1, total1, invest1 = wallet(actions[:-1], income, invest)
-            result2, total2, invest2 = wallet(actions[:-1], income, invest-actions[-1]["cost"])
-            result2.append(actions[-1])
-            total2 += actions[-1]["cost"]*actions[-1]["benefice"]
+            wallet1, income1, invest1 = wallet(actions[:-1], income, invest)
+            wallet2, income2, invest2 = wallet(actions[:-1], income, invest-actions[-1]["cost"])
+            wallet2.append(actions[-1])
+            income2 += actions[-1]["cost"]*actions[-1]["benefice"]
             invest2 += actions[-1]["cost"]
-            if total2 > total1:
-                result = result2, total2, invest2
+            if income2 > income1:
+                best_choice = wallet2, income2, invest2
             else:
-                result = result1, total1, invest1
-            return result
+                best_choice = wallet1, income1, invest1
+            return best_choice
     else:
         return [], 0, 0  # wallet is empty so invest and income are null
 
