@@ -1,4 +1,4 @@
-# first experiments for P7
+# 0/1 knapsack version
 action_1 = {"name": "action_1", "cost": 20, "benefice": 0.05}
 action_2 = {"name": "action_2", "cost": 30, "benefice": 0.1}
 action_3 = {"name": "action_3", "cost": 50, "benefice": 0.15}
@@ -32,63 +32,42 @@ actions_list = [
     action_10,
     action_11,
     action_12,
-    # action_13,
-    # action_14,
-    # action_15,
-    # action_16,
-    # action_17,
-    # action_18,
-    # action_19,
-    # action_20
+    action_13,
+    action_14,
+    action_15,
+    action_16,
+    action_17,
+    action_18,
+    action_19,
+    action_20
 ]
 
-actions = dict()
-
-for action in actions_list:
-    actions[action['name']] = action
+max_income = 0  # total income from actions
+max_invest = 500  # total money that could be invested
 
 
-income = 0  # total income from actions
-
-
-
-multiwallet = []
-
-count = 0
-
-def combi(lvl, liste, result, current_invest, max):
-    global invest, count
-    invest = current_invest
-    if lvl < len(actions):
-        for item in liste.values():
-            if invest + item["cost"] <= max:
-                result.append(item)
-                invest += item["cost"]
-                newlist = liste.copy()
-                del(newlist[item['name']])
-                combi(lvl + 1, newlist, result, invest, 500)
-        if result:
-            invest -= result[-1]["cost"]
-            result.pop()
-
+def wallet(actions, income, invest):
+    if actions:
+        if actions[-1]["cost"] > invest:
+            # with adding this action, invest is over authorized max invest
+            # so the best wallet is a wallet without this action
+            return wallet(actions[:-1], income, invest)
+        else:
+            # two possibilities
+            # case 1 : the best wallet excluding current action
+            # case 2 : the best wallet including current action
+            result1, total1, invest1 = wallet(actions[:-1], income, invest)
+            result2, total2, invest2 = wallet(actions[:-1], income, invest-actions[-1]["cost"])
+            result2.append(actions[-1])
+            total2 += actions[-1]["cost"]*actions[-1]["benefice"]
+            invest2 += actions[-1]["cost"]
+            if total2 > total1:
+                result = result2, total2, invest2
+            else:
+                result = result1, total1, invest1
+            return result
     else:
-        for action in liste.values():
-            if invest + action['cost'] <= 500:
-                result.append(action)
-                invest += action['cost']
-        wallet = dict()
-        for action in result:
-            wallet[action['name']] = action # actual list of buyed actions
-        if wallet not in multiwallet:
-            multiwallet.append(wallet)
-        invest -= result[-1]["cost"]
-        result.pop()
-        invest -= result[-1]["cost"]
-        result.pop()
-    print(count)
-    count += 1
+        return [], 0, 0  # wallet is empty so invest and income are null
 
-
-combi(1, actions, [], 0, 500)
-print(multiwallet)
-
+choice = wallet(actions_list, max_income, max_invest)
+print("Meilleur choix :", choice)
