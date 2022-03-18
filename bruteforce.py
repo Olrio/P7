@@ -69,5 +69,6 @@ def wallet(actions, income, invest):
     else:
         return [], 0, 0  # wallet is empty so invest and income are null
 
+
 choice = wallet(actions_list, max_income, max_invest)
 print("Meilleur choix :", choice)
